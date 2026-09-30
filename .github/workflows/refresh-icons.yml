@@ -1,0 +1,52 @@
+name: Refresh Blender icons
+
+on:
+  workflow_dispatch:
+    inputs:
+      blender_ref:
+        description: 'Blender tag or commit to import (for example v4.5.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check out Blender SVG sources
+        uses: actions/checkout@v4
+        with:
+          repository: blender/blender
+          ref: ${{ inputs.blender_ref }}
+          path: .upstream/blender
+          fetch-depth: 1
+          sparse-checkout: |
+            release/datafiles/icons_svg
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Prepare icons and record the actual upstream commit
+        env:
+          PYTHONPATH: src
+        run: |
+          python tools/import_blender.py .upstream/blender
+      - name: Build distributions containing the refreshed assets
+        run: |
+          python -m pip install build twine
+          python -m build
+          python -m twine check dist/*
+      - name: Upload reviewable assets and distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: refreshed-blender-icons
+          path: |
+            src/blender_doc_icons/assets/icons/
+            src/blender_doc_icons/assets/manifest.json
+            dist/
+          if-no-files-found: error

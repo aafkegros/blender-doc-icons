@@ -1,0 +1,30 @@
+name: Check package
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Build and install the wheel
+        run: |
+          python -m pip install build
+          python -m build
+          python -m pip install '.[dev]'
+          python -m pip install --force-reinstall --no-deps dist/*.whl
+      - name: Check shared behaviour and example sites
+        run: |
+          python -m unittest discover -s tests
+          mkdocs build --strict -f examples/mkdocs/mkdocs.yml
+          sphinx-build -q -W -b html examples/sphinx /tmp/blender-icons-html
+          sphinx-build -q -W -b text examples/sphinx /tmp/blender-icons-text
+          python -m twine check dist/*

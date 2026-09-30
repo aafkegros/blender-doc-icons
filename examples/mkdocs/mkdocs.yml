@@ -1,0 +1,9 @@
+site_name: Blender icons example
+plugins:
+  - search
+  - blender-icons
+markdown_extensions:
+  - fenced_code
+nav:
+  - Icons: index.md
+  - Nested page: guide/nested.md

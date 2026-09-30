@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blender-doc-icons"
+version = "0.1.0"
+description = "Blender SVG icons for MkDocs, Sphinx, and other documentation tools"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT AND CC-BY-SA-4.0"
+license-files = ["LICENSE", "NOTICE.md", "LICENSES/*.txt"]
+keywords = ["blender", "icons", "mkdocs", "sphinx", "markdown"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Topic :: Documentation",
+]
+
+[project.optional-dependencies]
+markdown = ["Markdown>=3.6"]
+mkdocs = ["mkdocs>=1.6", "Markdown>=3.6"]
+sphinx = ["Sphinx>=7"]
+dev = ["build>=1", "twine>=5", "Markdown>=3.6", "mkdocs>=1.6", "Sphinx>=7"]
+
+[project.scripts]
+blender-icons = "blender_doc_icons.cli:main"
+
+[project.entry-points."mkdocs.plugins"]
+blender-icons = "blender_doc_icons.mkdocs:BlenderIconsPlugin"
+
+[project.entry-points."markdown.extensions"]
+blender-icons = "blender_doc_icons.markdown:BlenderIconsExtension"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+blender_doc_icons = ["assets/*.css", "assets/*.json", "assets/*.md", "assets/*.txt", "assets/icons/*.svg"]

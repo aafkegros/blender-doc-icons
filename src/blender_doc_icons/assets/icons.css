@@ -1,0 +1,13 @@
+.blender-icon {
+  display: inline-block;
+  height: var(--blender-icon-size, 1em);
+  vertical-align: -0.15em;
+  color: var(--blender-icon-color, inherit);
+  line-height: 1;
+}
+.blender-icon > svg {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: none;
+}
