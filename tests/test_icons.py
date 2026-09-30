@@ -1,6 +1,7 @@
 """Small regression checks for the shared behaviour and Markdown integration."""
 import tempfile
 import importlib.util
+import json
 import unittest
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -9,9 +10,22 @@ import markdown
 
 from blender_doc_icons import IconRegistry, UnknownIconError, get_svg, render_html
 from blender_doc_icons.core import normalize_svg
+from blender_doc_icons.quarto import export_quarto
 
 
 class IconTests(unittest.TestCase):
+    def test_quarto_export_captures_custom_icons_and_licenses(self):
+        with tempfile.TemporaryDirectory() as directory:
+            custom = Path(directory) / 'custom'
+            custom.mkdir()
+            (custom / 'scene_data.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42"><path fill="#fff" /></svg>')
+            output = export_quarto(Path(directory) / 'extension', IconRegistry(custom))
+            icons = json.loads((output / 'icons.json').read_text())
+            self.assertIn('viewBox="0 0 42 42"', icons['scene_data'])
+            self.assertIn('currentColor', icons['scene_data'])
+            for name in ('_extension.yml', 'blender-icons.lua', 'icons.css', 'NOTICE.md', 'CC-BY-SA-4.0.txt'):
+                self.assertTrue((output / name).is_file(), name)
+
     def test_accessibility_and_unique_ids(self):
         markup = render_html('scene_data', label='Scene "Properties"')
         self.assertIn('aria-label="Scene &quot;Properties&quot;"', markup)
