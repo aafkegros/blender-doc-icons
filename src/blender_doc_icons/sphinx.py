@@ -19,7 +19,7 @@ def _registry(env):
 class BlenderIconRole(SphinxRole):
     def run(self):
         name, separator, label = self.text.partition("|")
-        name = name.strip()
+        name = name.strip().lower()
         label = label.strip() if separator else None
         try:
             registry = _registry(self.env)

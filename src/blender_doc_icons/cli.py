@@ -17,16 +17,24 @@ def main():
     export.add_argument("names", nargs="*", help="Icon names; omit to export all")
     export.add_argument("--output", type=Path, required=True)
     export.add_argument("--color", default="#5e5e5e", help="Hex colour for standalone SVGs")
+    quarto = commands.add_parser("quarto", help="Export a self-contained Quarto shortcode extension")
+    quarto.add_argument("--output", type=Path, default=Path("_extensions/blender-icons"),
+                        help="Extension directory (default: _extensions/blender-icons)")
     args = parser.parse_args()
     try:
         registry = IconRegistry(args.icon_dir)
+        if args.command == "quarto":
+            from .quarto import export_quarto
+            destination = export_quarto(args.output, registry)
+            print(f"Exported Quarto extension to {destination}")
+            return
         if args.command == "list":
-            print("\n".join(name for name in registry.list_icons() if args.query in name))
+            print("\n".join(name for name in registry.list_icons() if args.query.lower() in name))
             return
         if not re.fullmatch(r"#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})", args.color):
             parser.error("--color must be a three- or six-digit hex colour, e.g. '#5e5e5e'")
         # Resolve every requested icon before writing anything.
-        icons = {name: registry.get_svg(name) for name in (args.names or registry.list_icons())}
+        icons = {name.lower(): registry.get_svg(name) for name in (args.names or registry.list_icons())}
         args.output.mkdir(parents=True, exist_ok=True)
         for name, svg in icons.items():
             (args.output / f"{name}.svg").write_text(svg.replace("currentColor", args.color), encoding="utf-8")

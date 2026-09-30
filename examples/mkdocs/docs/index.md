@@ -1,6 +1,6 @@
 # Blender icons
 
-Open :blender-scene_data: **Scene Properties**.
+Open :blender-SCENE_DATA: **Scene Properties**.
 
 Choose :blender-camera_data|Camera: or :blender-outliner_data_volume: Volume.
 

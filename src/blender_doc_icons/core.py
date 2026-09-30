@@ -71,8 +71,9 @@ class IconRegistry:
         return sorted(self._bundled | local)
 
     def get_svg(self, name: str) -> str:
+        name = name.lower()
         if not _NAME.fullmatch(name):
-            raise UnknownIconError(f"Invalid icon name: {name!r}; use lowercase letters, digits, and underscores")
+            raise UnknownIconError(f"Invalid icon name: {name!r}; use letters, digits, and underscores")
         if self.icon_dir is not None:
             path = self.icon_dir / f"{name}.svg"
             if path.is_file():

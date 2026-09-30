@@ -25,8 +25,13 @@ class IconTests(unittest.TestCase):
             identifier = next(e.get('id') for e in root.iter() if e.get('id'))
             self.assertIn(f'url(#{identifier})', first)
 
+    def test_uppercase_and_mixed_case_names(self):
+        self.assertEqual(get_svg('SCENE_DATA'), get_svg('scene_data'))
+        self.assertEqual(get_svg('Scene_Data'), get_svg('scene_data'))
+        self.assertIn('class="blender-icon"', render_html('CAMERA_DATA'))
+
     def test_unknown_names_and_paths(self):
-        for name in ('../scene_data', 'missing_icon_name', 'Scene_Data'):
+        for name in ('../scene_data', 'missing_icon_name', 'SCENE-DATA'):
             with self.assertRaises(UnknownIconError):
                 get_svg(name)
 
@@ -35,13 +40,13 @@ class IconTests(unittest.TestCase):
             path = Path(directory, 'scene_data.svg')
             path.write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="none" stroke="#fff" /></svg>')
             registry = IconRegistry(directory)
-            self.assertIn('fill="none"', registry.get_svg('scene_data'))
-            self.assertIn('stroke="currentColor"', registry.get_svg('scene_data'))
+            self.assertIn('fill="none"', registry.get_svg('SCENE_DATA'))
+            self.assertIn('stroke="currentColor"', registry.get_svg('SCENE_DATA'))
             path.write_text(path.read_text().replace('16 16', '24 24'))
-            self.assertIn('24 24', registry.get_svg('scene_data'))
+            self.assertIn('24 24', registry.get_svg('SCENE_DATA'))
 
     def test_markdown_code_links_and_labels(self):
-        source = ':blender-scene_data: :blender-camera_data|Camera: [link](https://example.com/:blender-scene_data:)\n\n`:blender-scene_data:`\n\n```\n:blender-scene_data:\n```'
+        source = ':blender-SCENE_DATA: :blender-Camera_Data|Camera: [link](https://example.com/:blender-scene_data:)\n\n`:blender-scene_data:`\n\n```\n:blender-scene_data:\n```'
         html = markdown.markdown(source, extensions=['blender_doc_icons.markdown', 'fenced_code'])
         self.assertEqual(html.count('class="blender-icon"'), 2)
         self.assertIn('<code>:blender-scene_data:</code>', html)

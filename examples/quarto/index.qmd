@@ -1,0 +1,14 @@
+---
+title: Blender icons
+format: html
+---
+
+Open {{< blender SCENE_DATA >}} **Scene Properties**.
+
+Accessible label: {{< blender camera_data label="Camera Properties" >}}.
+
+Repeated icons: {{< blender scene_data >}} {{< blender scene_data >}}.
+
+```markdown shortcodes=false
+{{< blender scene_data >}}
+```

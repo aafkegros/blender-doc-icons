@@ -1,9 +1,11 @@
 # Blender documentation icons
 
-Inline Blender SVG icons for **MkDocs**, **Python-Markdown**, and **Sphinx**,
+Inline Blender SVG icons for **MkDocs**, **Python-Markdown**, **Sphinx**, and **Quarto**,
 with a dependency-free Python API and static SVG export for other platforms.
 No Blender installation, JavaScript, Material theme, or network access is needed
 when building documentation.
+
+This helps in referring to Blender namespaces within written tutorials, as Blender is so icon-based. This was initially developed for [Microscopy Nodes](https://github.com/aafkegros/MicroscopyNodes). 
 
 ## MkDocs
 
@@ -26,7 +28,11 @@ An icon with an accessible label: :blender-camera_data|Camera:.
 
 The plugin enables the Markdown extension and supplies its stylesheet. Do not
 also enable the Markdown extension separately. Unknown icon names fail the build.
-Use lowercase Blender icon names, without a `blender_icon_` prefix or `.svg` suffix.
+Icon names are case-insensitive: `:blender-SCENE_DATA:`, copied from the
+[Blender icon browser](https://ui.blender.org/icons), works just like
+`:blender-scene_data:`. Omit the `blender_icon_` prefix and `.svg` suffix.
+This also applies to Sphinx roles, Python lookups, and CLI search/export.
+Keep custom SVG filenames lowercase; exported filenames are lowercase too.
 Inline and fenced code examples retain their literal syntax.
 
 ### Custom icons and styling
@@ -72,7 +78,7 @@ reStructuredText:
 
 ```rst
 Open :blender-icon:`scene_data` Scene Properties.
-Labelled icon: :blender-icon:`camera_data|Camera`.
+Labelled icon: :blender-icon:`CAMERA_DATA|Camera`.
 ```
 
 MyST Markdown (install and enable `myst_parser` separately):
@@ -83,6 +89,44 @@ Open {blender-icon}`scene_data` Scene Properties.
 
 HTML builds receive inline SVGs and CSS. Other builders receive the label or a
 readable icon name, rather than an image; PDF icon rendering is not implemented.
+
+## Quarto
+
+Install the Python package, then run this from your Quarto project directory
+(or the directory containing a standalone `.qmd` file):
+
+```sh
+pip install blender-doc-icons
+blender-icons quarto
+```
+
+This writes a self-contained extension to `_extensions/blender-icons`. Quarto
+discovers its shortcode automatically; no filter configuration is needed:
+
+```markdown
+Open {{< blender SCENE_DATA >}} **Scene Properties**.
+Labelled icon: {{< blender camera_data label="Camera Properties" >}}.
+```
+
+The extension uses Quarto's [native shortcode API](https://quarto.org/docs/extensions/shortcodes.html).
+HTML output receives inline SVGs and automatic CSS, with the same colour, sizing,
+and accessibility behaviour as MkDocs. Other formats, including PDF and Word,
+receive the label or a readable name such as `[scene data]`. Unknown names fail
+rendering. Quarto uses its own shortcode syntax, not `:blender-name:`.
+
+The generated extension includes all icons and licence notices. Commit it with
+your documentation: rendering needs Quarto (1.4 or later), but no Python package
+or network connection. Re-run the command after updating the package or custom
+icons; matching generated files are replaced. Custom artwork is a snapshot:
+
+```sh
+blender-icons --icon-dir custom_icons quarto
+# Or choose the extension destination explicitly:
+blender-icons quarto --output my-docs/_extensions/blender-icons
+```
+
+For literal shortcode examples in fenced code, use the Quarto attribute
+`shortcodes=false`. See `examples/quarto` for a runnable example.
 
 ## Python-Markdown without MkDocs
 
@@ -108,8 +152,8 @@ such as markdown-it or MDX need their own adapter or exported images.
 
 ```sh
 pip install blender-doc-icons
-blender-icons list camera
-blender-icons export scene_data camera_data --output icons --color '#5e5e5e'
+blender-icons list CAMERA
+blender-icons export SCENE_DATA CAMERA_DATA --output icons --color '#5e5e5e'
 # Omit names to export the entire catalogue.
 ```
 
@@ -217,3 +261,16 @@ credit in documentation or publications using the icons:
 
 See [NOTICE.md](NOTICE.md) for the original provenance, modification details, and
 an alternative credit for publications that also use the Microscopy Nodes icon.
+
+### Can the refresh workflow use ui.blender.org/icons instead?
+
+The [official browser](https://ui.blender.org/icons) is useful for browsing and
+copying names. As inspected on 2026-09-30, its JavaScript bundle embeds the icon
+names and SVG markup. A workflow could scrape that data, but that depends on
+hashed bundle URLs and internal JavaScript formatting rather than a documented
+bulk-download API, and does not identify an exact Blender source commit.
+
+The supplied workflow therefore continues to use Blender's Git source at a
+chosen tag or commit. It downloads the SVG source directory through sparse
+checkout; it does not need to compile or install Blender. A browser-based
+importer is not currently included.

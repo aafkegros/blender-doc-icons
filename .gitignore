@@ -7,3 +7,8 @@ dist/
 site/
 _build/
 .DS_Store
+examples/quarto/_extensions/
+examples/quarto/index.html
+examples/quarto/index.md
+examples/quarto/index_files/
+examples/quarto/.quarto/

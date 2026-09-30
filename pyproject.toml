@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "blender-doc-icons"
 version = "0.1.0"
-description = "Blender SVG icons for MkDocs, Sphinx, and other documentation tools"
+description = "Blender SVG icons for MkDocs, Sphinx, Quarto, and other documentation tools"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT AND CC-BY-SA-4.0"
 license-files = ["LICENSE", "NOTICE.md", "LICENSES/*.txt"]
-keywords = ["blender", "icons", "mkdocs", "sphinx", "markdown"]
+keywords = ["blender", "icons", "mkdocs", "sphinx", "quarto", "markdown"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python :: 3",
@@ -36,4 +36,4 @@ blender-icons = "blender_doc_icons.markdown:BlenderIconsExtension"
 where = ["src"]
 
 [tool.setuptools.package-data]
-blender_doc_icons = ["assets/*.css", "assets/*.json", "assets/*.md", "assets/*.txt", "assets/icons/*.svg"]
+blender_doc_icons = ["assets/*.css", "assets/*.json", "assets/*.md", "assets/*.txt", "assets/icons/*.svg", "assets/quarto/*.lua", "assets/quarto/*.yml"]
