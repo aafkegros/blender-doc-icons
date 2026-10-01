@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "blender-doc-icons"
-version = "0.0.2"
+version = "520.0.0"
 description = "Blender SVG icons for MkDocs, Sphinx, Quarto, and other documentation tools"
 readme = "README.md"
 requires-python = ">=3.10"
