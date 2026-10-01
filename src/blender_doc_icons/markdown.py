@@ -23,7 +23,8 @@ class BlenderIconsExtension(Extension):
     def extendMarkdown(self, md):
         registry = IconRegistry(self.getConfig("icon_dir") or None)
         md.registerExtension(self)
-        md.inlinePatterns.register(IconInlineProcessor(registry, md), "blender-icons", 75)
+        # Run before pymdownx.emoji (75), while keeping code, links, and HTML protected.
+        md.inlinePatterns.register(IconInlineProcessor(registry, md), "blender-icons", 76)
 
 
 def makeExtension(**kwargs):

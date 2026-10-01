@@ -17,11 +17,15 @@ classifiers = [
   "Topic :: Documentation",
 ]
 
+[project.urls]
+Homepage = "https://github.com/aafkegros/blender-doc-icons"
+Issues = "https://github.com/aafkegros/blender-doc-icons/issues"
+
 [project.optional-dependencies]
 markdown = ["Markdown>=3.6"]
 mkdocs = ["mkdocs>=1.6", "Markdown>=3.6"]
 sphinx = ["Sphinx>=7"]
-dev = ["build>=1", "twine>=5", "Markdown>=3.6", "mkdocs>=1.6", "Sphinx>=7"]
+dev = ["pymdown-extensions>=10", "build>=1", "twine>=5", "Markdown>=3.6", "mkdocs>=1.6", "Sphinx>=7"]
 
 [project.scripts]
 blender-icons = "blender_doc_icons.cli:main"
