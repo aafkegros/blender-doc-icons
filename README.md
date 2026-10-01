@@ -231,12 +231,26 @@ The source project is not automatically modified by this package.
 On GitHub, run **Actions → Refresh Blender icons → Run workflow** and enter a
 Blender tag or commit (for example `v4.5.0`). The workflow sparsely checks out
 `blender/blender`, reads `release/datafiles/icons_svg`, cleans the icons, and
-uploads the generated assets, manifest, wheel, and source distribution as a
-reviewable artifact. It does not commit, open a PR, or publish to PyPI.
+validates the refreshed package, and opens a pull request against the repository's
+default branch. Review and merge that PR to apply the update; no manual copying
+is needed. Subsequent runs update the same `codex/refresh-blender-icons` branch
+and open PR. If there are no changes, no new PR is created. Runs are serialized
+so they cannot write the update branch simultaneously.
 
-Download the artifact, review the icon changes, replace the package's generated
-`assets/icons` directory and `assets/manifest.json`, and commit the update.
-Replace the directory as a whole so deleted upstream icons do not linger.
+Before the first run, enable **Settings → Actions → General → Workflow permissions
+→ Allow GitHub Actions to create and approve pull requests**. The workflow requests
+`contents: write` and `pull-requests: write` and uses the built-in `GITHUB_TOKEN`;
+no personal token is required. Organization policy may control this setting.
+
+Only generated icons and their manifest are committed, including removal of
+obsolete icons. The assets, manifest, wheel, and source distribution remain
+available as a downloadable artifact. The workflow does not merge the PR or
+publish to PyPI. Because PRs created with `GITHUB_TOKEN` do not trigger the normal
+PR workflows, this refresh workflow runs the regression tests and MkDocs/Sphinx
+example builds itself before opening the PR. If branch protection requires a
+separate PR check, configure a GitHub App token to trigger it or have a maintainer
+close and reopen the PR to trigger the existing `pull_request` workflow.
+
 The manifest records the actual Git commit even if the workflow input was a tag.
 Review upstream licence/attribution changes when adding new artwork.
 
