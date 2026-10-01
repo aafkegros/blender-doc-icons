@@ -1,54 +1,153 @@
 # Blender documentation icons
 
-Inline Blender SVG icons for **MkDocs**, **Python-Markdown**, **Sphinx**, and **Quarto**,
-with a dependency-free Python API and static SVG export for other platforms.
-No Blender installation, JavaScript, Material theme, or network access is needed
-when building documentation.
+Bring Blender’s familiar interface icons into your tutorials and documentation.
+Use inline SVGs alongside text to help readers find the right editor, property,
+modifier, or tool.
 
-This helps in referring to Blender namespaces within written tutorials, as Blender is so icon-based. This was initially developed for [Microscopy Nodes](https://github.com/aafkegros/MicroscopyNodes). 
+**MkDocs · Sphinx & Furo · Quarto · Python-Markdown · Python**
+
+Icons scale with your text and inherit its colour, including in dark themes.
+No Blender installation or JavaScript is needed, and the bundled icons work
+without network access when building your documentation.
+
+## Choose your setup
+
+| Writing with | Get started |
+| --- | --- |
+| MkDocs | [Enable the plugin](#mkdocs) |
+| Sphinx, Furo, or MyST | [Add the Sphinx extension](#sphinx-and-furo) |
+| Quarto | [Export the shortcode extension](#quarto) |
+| Python-Markdown | [Enable the Markdown extension](#python-markdown) |
+| Other tools or a GitHub README | [Export SVG files](#export-svg-files) |
+| Your own Python application | [Use the Python API](#python-api) |
+
+Package installation requires **Python 3.10 or later**.
 
 ## MkDocs
+
+Install the plugin:
 
 ```sh
 pip install 'blender-doc-icons[mkdocs]'
 ```
 
+Add it to your existing plugins in `mkdocs.yml`:
+
 ```yaml
-# mkdocs.yml
 plugins:
   - search
   - blender-icons
 ```
 
+Then use icons in your Markdown:
+
 ```markdown
 Open :blender-scene_data: **Scene Properties**.
 
-An icon with an accessible label: :blender-camera_data|Camera:.
+:blender-camera_data|Camera: Add a camera to the scene.
 ```
 
-The plugin enables the Markdown extension and supplies its stylesheet. Do not
-also enable the Markdown extension separately. Unknown icon names fail the build.
-Icon names are case-insensitive: `:blender-SCENE_DATA:`, copied from the
-[Blender icon browser](https://ui.blender.org/icons), works just like
-`:blender-scene_data:`. Omit the `blender_icon_` prefix and `.svg` suffix.
-This also applies to Sphinx roles, Python lookups, and CLI search/export.
-Keep custom SVG filenames lowercase; exported filenames are lowercase too.
-Inline and fenced code examples retain their literal syntax.
+The plugin includes the stylesheet and enables the Markdown syntax automatically.
+There is no need to register a separate Markdown extension. Inline code and fenced
+code blocks keep the icon syntax as literal text.
 
-### Custom icons and styling
+[View the MkDocs example](examples/mkdocs/docs/index.md).
 
-```yaml
-plugins:
-  - blender-icons:
-      icon_dir: docs/custom_icons
+## Sphinx and Furo
+
+Install the extension:
+
+```sh
+pip install 'blender-doc-icons[sphinx]'
 ```
 
-`icon_dir` is relative to `mkdocs.yml`. A file `microscopy_nodes.svg` becomes
-`:blender-microscopy_nodes:`. Custom icons override bundled icons with the same
-name and must have an SVG namespace and `viewBox`. These are trusted local assets,
-not user uploads; the SVG normalizer is not a security sanitizer.
+Add `blender_doc_icons.sphinx` to your existing extensions in `conf.py`:
 
-Icons inherit text colour and use a height of `1em`. Optional CSS:
+```python
+extensions = ['blender_doc_icons.sphinx']
+```
+
+Use the role in reStructuredText:
+
+```rst
+Open :blender-icon:`scene_data` Scene Properties.
+Labelled icon: :blender-icon:`camera_data|Camera`.
+```
+
+For **MyST Markdown**, install and enable `myst_parser` as well:
+
+```markdown
+Open {blender-icon}`scene_data` Scene Properties.
+Labelled icon: {blender-icon}`camera_data|Camera`.
+```
+
+**Furo works with the same extension.** Install `furo` and set
+`html_theme = 'furo'` in `conf.py`. Icons follow the surrounding text colour in
+both light and dark themes.
+
+HTML builds include inline SVGs and the stylesheet automatically. Other output
+formats use the label or a readable icon name as text; they do not render icons.
+
+[View the Sphinx example](examples/sphinx/index.rst).
+
+## Quarto
+
+Install the package, then run `blender-icons quarto` from your Quarto project
+folder or the folder containing your `.qmd` file:
+
+```sh
+pip install blender-doc-icons
+blender-icons quarto
+```
+
+This creates `_extensions/blender-icons`. Quarto discovers the extension
+automatically, so you can start using its shortcode:
+
+```markdown
+Open {{< blender scene_data >}} **Scene Properties**.
+Labelled icon: {{< blender camera_data label="Camera Properties" >}}.
+```
+
+Keep the generated extension with your documentation. Rendering requires
+**Quarto 1.4 or later**, but no Python installation or network connection.
+HTML output includes inline SVGs and CSS; other formats, including PDF and Word,
+use the label or a readable name such as `[scene data]`.
+
+To choose another destination:
+
+```sh
+blender-icons quarto --output my-docs/_extensions/blender-icons
+```
+
+Run the export command again after updating the package or your custom icons.
+It replaces matching generated files. To show literal shortcodes in fenced code
+examples, add the Quarto code-block attribute `shortcodes=false`.
+
+[View the Quarto example](examples/quarto/index.qmd).
+
+## Find an icon
+
+Search the installed collection by name:
+
+```sh
+blender-icons list camera
+blender-icons list modifier
+# List every available icon:
+blender-icons list
+```
+
+You can also browse the [Blender icon browser](https://ui.blender.org/icons) for
+visual reference. The installed collection may differ from the browser’s Blender
+version; `blender-icons list` shows the names available in your package.
+
+Names are case-insensitive: `SCENE_DATA` and `scene_data` refer to the same icon.
+Use the name without a `blender_icon_` prefix or `.svg` suffix. Unknown names
+produce an error so missing icons do not silently disappear from your docs.
+
+## Styling and accessible labels
+
+Inline icons default to **1em high** and inherit the surrounding text colour.
+Add this to your documentation’s custom CSS to adjust them:
 
 ```css
 .blender-icon {
@@ -57,78 +156,56 @@ Icons inherit text colour and use a height of `1em`. Optional CSS:
 }
 ```
 
-Unlabelled icons are decorative (`aria-hidden`). Use a label after `|` when the
-icon conveys information that is not already present in adjacent text. Labels
-cannot contain colons or line breaks in Markdown syntax.
+Omit `--blender-icon-color` to keep automatic colour inheritance in light and dark
+themes.
 
-## Sphinx, including MyST
+Icons without labels are decorative and hidden from screen readers. Add a label
+when an icon communicates something that the adjacent text does not explain:
 
-```sh
-pip install 'blender-doc-icons[sphinx]'
+| Integration | Label syntax |
+| --- | --- |
+| MkDocs / Python-Markdown | `:blender-camera_data\|Camera:` |
+| Sphinx | `` :blender-icon:`camera_data\|Camera` `` |
+| MyST | `` {blender-icon}`camera_data\|Camera` `` |
+| Quarto | `{{< blender camera_data label="Camera" >}}` |
+
+In the MkDocs and Python-Markdown syntax, labels cannot contain colons or line
+breaks.
+
+## Custom icons
+
+Add your own SVGs or override a bundled icon by using the same filename. Use
+lowercase filenames, such as `my_icon.svg`, containing letters, digits, and
+underscores. Each SVG must have an SVG namespace and a `viewBox`.
+
+**MkDocs** — set a directory relative to `mkdocs.yml`:
+
+```yaml
+plugins:
+  - blender-icons:
+      icon_dir: docs/custom_icons
 ```
+
+**Sphinx / Furo** — set a directory relative to your Sphinx source folder:
 
 ```python
 # conf.py
-extensions = ['blender_doc_icons.sphinx']
-# Optional, relative to the Sphinx source directory:
-# blender_icons_dir = 'custom_icons'
+blender_icons_dir = 'custom_icons'
 ```
 
-reStructuredText:
-
-```rst
-Open :blender-icon:`scene_data` Scene Properties.
-Labelled icon: :blender-icon:`CAMERA_DATA|Camera`.
-```
-
-MyST Markdown (install and enable `myst_parser` separately):
-
-```markdown
-Open {blender-icon}`scene_data` Scene Properties.
-```
-
-HTML builds receive inline SVGs and CSS. Other builders receive the label or a
-readable icon name, rather than an image; PDF icon rendering is not implemented.
-
-## Quarto
-
-Install the Python package, then run this from your Quarto project directory
-(or the directory containing a standalone `.qmd` file):
-
-```sh
-pip install blender-doc-icons
-blender-icons quarto
-```
-
-This writes a self-contained extension to `_extensions/blender-icons`. Quarto
-discovers its shortcode automatically; no filter configuration is needed:
-
-```markdown
-Open {{< blender SCENE_DATA >}} **Scene Properties**.
-Labelled icon: {{< blender camera_data label="Camera Properties" >}}.
-```
-
-The extension uses Quarto's [native shortcode API](https://quarto.org/docs/extensions/shortcodes.html).
-HTML output receives inline SVGs and automatic CSS, with the same colour, sizing,
-and accessibility behaviour as MkDocs. Other formats, including PDF and Word,
-receive the label or a readable name such as `[scene data]`. Unknown names fail
-rendering. Quarto uses its own shortcode syntax, not `:blender-name:`.
-
-The generated extension includes all icons and licence notices. Commit it with
-your documentation: rendering needs Quarto (1.4 or later), but no Python package
-or network connection. Re-run the command after updating the package or custom
-icons; matching generated files are replaced. Custom artwork is a snapshot:
+**Quarto** — include your custom icons when exporting the extension:
 
 ```sh
 blender-icons --icon-dir custom_icons quarto
-# Or choose the extension destination explicitly:
-blender-icons quarto --output my-docs/_extensions/blender-icons
 ```
 
-For literal shortcode examples in fenced code, use the Quarto attribute
-`shortcodes=false`. See `examples/quarto` for a runnable example.
+The file `my_icon.svg` is then available as `my_icon` using your platform’s normal
+icon syntax. Quarto captures a copy at export time; re-export after making changes.
+Use trusted SVG files: normalization is not a sanitizer for untrusted uploads.
 
-## Python-Markdown without MkDocs
+## Python-Markdown
+
+For Python-Markdown without MkDocs:
 
 ```sh
 pip install 'blender-doc-icons[markdown]'
@@ -145,146 +222,69 @@ html = markdown.markdown(
 css = get_css()  # Include once in your page stylesheet.
 ```
 
-This integration supports Python-Markdown, not every Markdown engine. Platforms
-such as markdown-it or MDX need their own adapter or exported images.
+This extension is for Python-Markdown. For other Markdown engines, such as
+markdown-it or MDX, use exported SVG files or integrate the Python API.
 
-## Python API and static export
+## Export SVG files
+
+Use standalone images in a GitHub README or other documentation tool:
 
 ```sh
 pip install blender-doc-icons
-blender-icons list CAMERA
-blender-icons export SCENE_DATA CAMERA_DATA --output icons --color '#5e5e5e'
-# Omit names to export the entire catalogue.
+blender-icons export scene_data camera_data --output icons --color '#5e5e5e'
 ```
 
-```python
-from blender_doc_icons import get_svg, list_icons, render_html, get_css
-
-svg = get_svg('scene_data')
-html = render_html('camera_data', label='Camera')
-```
-
-For a local collection, use `IconRegistry(icon_dir='my-icons')` and its
-`list_icons()`, `get_svg()`, and `render_html()` methods.
-
-The export command writes SVGs, CSS, attribution notes, and the artwork licence; files with matching
-names in the output directory are replaced. Exported SVGs have an explicit colour
-because `<img>` content does not inherit page text colour. For a GitHub README:
+Then reference a file:
 
 ```html
 <img src="icons/scene_data.svg" width="16" alt="Scene Properties">
 ```
 
-## Developing and publishing
+Omit icon names to export the whole collection. The command also writes CSS,
+attribution notes, and the artwork licence. Matching files in the output folder
+are replaced.
 
-From this repository:
+Exported images use an explicit colour because SVGs displayed through `<img>`
+do not inherit the page’s text colour. Use an inline integration for automatic
+light/dark theme colours.
 
-```sh
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
-python -m unittest discover -s tests
-mkdocs build --strict -f examples/mkdocs/mkdocs.yml
-sphinx-build -W -b html examples/sphinx examples/sphinx/_build/html
-python -m build
-python -m twine check dist/*
+## Python API
+
+The core API has no third-party Python dependencies:
+
+```python
+from blender_doc_icons import get_css, get_svg, list_icons, render_html
+
+names = list_icons()
+svg = get_svg('scene_data')
+html = render_html('camera_data', label='Camera')
+css = get_css()
 ```
 
-Before the first public release, confirm the distribution name is available
-on PyPI and update package metadata
-with your repository URL. The Python code is MIT licensed; third-party artwork
-has separate terms. The original Blender revision is currently unknown and is
-recorded as such in the bundled manifest. No Blender-version compatibility claim
-is made for this snapshot.
+`get_svg()` returns SVG artwork. `render_html()` adds the inline wrapper,
+accessibility attributes, and unique SVG IDs. Include `get_css()` once in your
+page stylesheet when using the HTML output.
 
-Upload to TestPyPI first, then PyPI:
+For custom icons:
 
-```sh
-python -m twine upload --repository testpypi dist/*
-python -m twine upload dist/*
+```python
+from blender_doc_icons import IconRegistry
+
+icons = IconRegistry(icon_dir='custom_icons')
+html = icons.render_html('my_icon', label='My tool')
 ```
 
-To refresh the trusted artwork after installing this package in editable mode:
+## Credits and licence
 
-```sh
-python tools/prepare_icons.py /path/to/icons \
-  --source-description 'Exact source URL and release' \
-  --upstream-revision 'Exact upstream tag or commit'
-```
+Originally developed for [Microscopy Nodes](https://github.com/aafkegros/MicroscopyNodes)
+to make Blender tutorials easier to follow.
 
-The importer removes editor metadata, normalizes solid fills/strokes to
-`currentColor`, preserves `none` and paint-server references, and records hashes.
-It excludes the project-specific `microscopy_nodes` icon. Two legacy source files
-without a viewBox receive an explicitly recorded 1600-unit canvas repair.
-Review upstream changes and licensing before publishing a refreshed collection.
-
-## Migrating Microscopy Nodes
-
-Replace `{{ svg("scene_data") }}` with `:blender-scene_data:` and configure the
-plugin. Keep `microscopy_nodes.svg` in a custom icon directory. Leave YouTube
-macros in your project; the icon plugin does not depend on mkdocs-macros.
-Replace `.icon` / `.small-icon` styling with `.blender-icon` styling as needed.
-The source project is not automatically modified by this package.
-
-## Updating directly from Blender
-
-On GitHub, run **Actions → Refresh Blender icons → Run workflow** and enter a
-Blender tag or commit (for example `v4.5.0`). The workflow sparsely checks out
-`blender/blender`, reads `release/datafiles/icons_svg`, cleans the icons, and
-validates the refreshed package, and opens a pull request against the repository's
-default branch. Review and merge that PR to apply the update; no manual copying
-is needed. Subsequent runs update the same `codex/refresh-blender-icons` branch
-and open PR. If there are no changes, no new PR is created. Runs are serialized
-so they cannot write the update branch simultaneously.
-
-Before the first run, enable **Settings → Actions → General → Workflow permissions
-→ Allow GitHub Actions to create and approve pull requests**. The workflow requests
-`contents: write` and `pull-requests: write` and uses the built-in `GITHUB_TOKEN`;
-no personal token is required. Organization policy may control this setting.
-
-Only generated icons and their manifest are committed, including removal of
-obsolete icons. The assets, manifest, wheel, and source distribution remain
-available as a downloadable artifact. The workflow does not merge the PR or
-publish to PyPI. Because PRs created with `GITHUB_TOKEN` do not trigger the normal
-PR workflows, this refresh workflow runs the regression tests and MkDocs/Sphinx
-example builds itself before opening the PR. If branch protection requires a
-separate PR check, configure a GitHub App token to trigger it or have a maintainer
-close and reopen the PR to trigger the existing `pull_request` workflow.
-
-The manifest records the actual Git commit even if the workflow input was a tag.
-Review upstream licence/attribution changes when adding new artwork.
-
-For an existing local Blender checkout:
-
-```sh
-PYTHONPATH=src python tools/import_blender.py /path/to/blender
-```
-
-The importer accepts current icon names and strips `blender_icon_` from filenames
-when present; dots in source names become underscores (for example
-`light.inline.svg` becomes `light_inline`). It validates the new collection before writing and removes obsolete
-generated icons. A missing source directory or unsupported SVG fails explicitly;
-there is no silent fallback to stale assets. No Blender binary is needed.
-
-## Attribution in publications
-
-The Blender icons are **CC-BY-SA 4.0**; the package code is **MIT**. Include this
-credit in documentation or publications using the icons:
+The package code is **MIT licensed**. The Blender icon artwork is
+**CC-BY-SA 4.0**. Include this credit in documentation or publications using the
+icons:
 
 > Blender icons designed by [@jenzdrich](https://blenderartists.org/t/new-icons-for-blender-2-8/1112701), used under [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). SVGs adapted for documentation by blender-doc-icons.
 
-See [NOTICE.md](NOTICE.md) for the original provenance, modification details, and
-an alternative credit for publications that also use the Microscopy Nodes icon.
-
-### Can the refresh workflow use ui.blender.org/icons instead?
-
-The [official browser](https://ui.blender.org/icons) is useful for browsing and
-copying names. As inspected on 2026-09-30, its JavaScript bundle embeds the icon
-names and SVG markup. A workflow could scrape that data, but that depends on
-hashed bundle URLs and internal JavaScript formatting rather than a documented
-bulk-download API, and does not identify an exact Blender source commit.
-
-The supplied workflow therefore continues to use Blender's Git source at a
-chosen tag or commit. It downloads the SVG source directory through sparse
-checkout; it does not need to compile or install Blender. A browser-based
-importer is not currently included.
+See [NOTICE.md](NOTICE.md) for artwork sources and modifications,
+[LICENSE](LICENSE) for the code licence, and
+[CC-BY-SA 4.0](LICENSES/CC-BY-SA-4.0.txt) for the artwork licence.
