@@ -4,6 +4,15 @@ Bring Blender’s familiar interface icons into your tutorials and documentation
 Use inline SVGs alongside text to help readers find the right editor, property,
 modifier, or tool.
 
+![Microscopy Nodes documentation in MkDocs, with inline Blender icons identifying the Outliner and viewport shading modes.](https://raw.githubusercontent.com/aafkegros/blender-doc-icons/main/usage_example.png)
+
+*In use in the [Microscopy Nodes](https://github.com/aafkegros/MicroscopyNodes)
+documentation, built with MkDocs.*
+
+Putting the actual icons beside your instructions makes it clear which interface
+regions and buttons you mean. SVG icons stay crisp at any text size, without
+cropping screenshots or building your own icon integration.
+
 **MkDocs · Sphinx & Furo · Quarto · Python-Markdown · Python**
 
 Icons scale with your text and inherit its colour, including in dark themes.
